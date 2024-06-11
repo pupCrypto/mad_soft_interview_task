@@ -1,5 +1,5 @@
 FROM python:3.11
-MAINTAINER Egor Bogdanov <>
+LABEL AUTHOR="Egor Bogdanov <>"
 WORKDIR /app/
 
 ENV PYTHONUNBUFFERED=1 \
