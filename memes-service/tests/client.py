@@ -1,4 +1,3 @@
-import json
 import httpx
 
 
@@ -18,14 +17,6 @@ class TestClient:
     def post_form(self, endpoint: str, files, **data) -> httpx.Response:
         url = self.BASE + endpoint
         return httpx.post(url, data=data, headers=self.form_headers, files=files)
-
-    def post(self, endpoint: str, **data) -> httpx.Response:
-        url = self.BASE + endpoint
-        return httpx.post(url, content=json.dumps(data))
-
-    def put(self, endpoint: str, **data) -> httpx.Response:
-        url = self.BASE + endpoint
-        return httpx.put(url, content=json.dumps(data))
 
     def delete(self, endpoint: str) -> httpx.Response:
         url = self.BASE + endpoint

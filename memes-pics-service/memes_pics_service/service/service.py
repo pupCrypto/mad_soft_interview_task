@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 from fastapi import Depends, UploadFile
 from .response_builder import (
@@ -38,7 +39,7 @@ async def get_service():
     try:
         await service.storage.init_storage()
     except Exception as e:
-        ...
+        logging.error(e, exc_info=True)
     return service
 
 ServiceDep = Annotated[Service, Depends(Service)]

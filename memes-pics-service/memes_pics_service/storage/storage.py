@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 from typing import TypeVar
 from fastapi import UploadFile
@@ -5,7 +6,6 @@ from minio import Minio
 from urllib3.response import HTTPResponse
 from ..schemas.schemas import StorageImage
 from ..settings import SETTINGS
-
 
 
 ImgUploaded = TypeVar('ImgUploaded', bound=bool)
@@ -45,6 +45,7 @@ class MinioStorage(StorageInterface):
             self.client.put_object(self.bucket_name, img.filename, img.file, img.size, img.content_type)
             return True
         except Exception as e:
+            logging.error(e, exc_info=True)
             return False
 
     async def init_storage(self):
