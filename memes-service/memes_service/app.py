@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+
+from typing import Annotated
+from fastapi import FastAPI, Query
 from .service.service import ServiceDep
 from .schemas.request import (
     CreateMemeReq,
@@ -21,9 +23,11 @@ app = FastAPI(
 
 @app.get('/memes')
 async def get_memes(
-    service: ServiceDep
+    service: ServiceDep,
+    limit: Annotated[int, Query(ge=10, le=50)] = 10,
+    page: Annotated[int, Query(ge=0)] = 0
 ) -> GetMemesResp:
-    return await service.get_memes()
+    return await service.get_memes(limit, page)
 
 
 @app.get('/memes/{meme_id}')

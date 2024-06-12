@@ -1,0 +1,2 @@
+class MemeNotFound(Exception):
+    pass
