@@ -35,6 +35,8 @@ services:
     container_name: memes-service
     build: ./memes-service/
     restart: always
+    expose:
+      - 80
     depends_on:
       - postgres
       - memes-pics-service
