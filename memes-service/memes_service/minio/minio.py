@@ -1,6 +1,5 @@
-
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Depends, UploadFile
 from minio import Minio
 from ..settings import SETTINGS
 
@@ -10,14 +9,14 @@ class MinioService:
 
     def __init__(self):
         self._client = Minio(
-            SETTINGS.MINIO_ENDPOINT,
+            endpoint=SETTINGS.MINIO_ENDPOINT,
             access_key=SETTINGS.MINIO_ACCESS_KEY,
-            secret_key=SETTINGS.MINIO_SECRET_KEY
+            secret_key=SETTINGS.MINIO_SECRET_KEY,
+            secure=False
         )
-        self.init_bucket()
 
-    def save_img(self):
-        ...
+    def save_img(self, img: UploadFile):
+        self.client.put_object(self.bucket_name, img.filename, img.file, img.size)
 
     def init_bucket(self):
         bucket_exists = self.client.bucket_exists(self.bucket_name)
@@ -29,4 +28,13 @@ class MinioService:
         return self._client
 
 
-MinioServiceDep = Annotated[Minio, Depends(MinioService)]
+def get_minio_client():
+    client = MinioService()
+    try:
+        client.init_bucket()
+    except:
+        pass
+    return client
+
+
+MinioServiceDep = Annotated[MinioService, Depends(get_minio_client)]

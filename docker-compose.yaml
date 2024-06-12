@@ -13,9 +13,9 @@ services:
       DB_USER: postgres
       DB_PWD: postgres
 
-      MINIO_HOST: minio-service
-      MINIO_USER: miniominio
-      MINIO_PWD: miniominio
+      MINIO_ENDPOINT: minio-service:9000
+      MINIO_ACCESS_KEY: kX0hDuWjVCTJy3oZbDvL
+      MINIO_SECRET_KEY: CWYewUFwO2G1sgNx8PCX9Wwz7rYVNJ3YiI69jOkw
 
       HOST: 0.0.0.0
       PORT: 80

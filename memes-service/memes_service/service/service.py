@@ -35,8 +35,8 @@ class Service:
             return ErrorRespBuilder.build(ErrorMsg.MEME_NOT_FOUND, status.HTTP_404_NOT_FOUND)
         return GetMemeRespBuilder.build(meme)
 
-    async def create_meme(self, params: CreateMemeReq):
-        meme_id = await self.storage.create_meme(params.content, params.img_url.unicode_string())
+    async def create_meme(self, content: str, img_url: str):
+        meme_id = await self.storage.create_meme(content, img_url)
         return CreateMemeRespBuilder.build(meme_id)
 
     async def edit_meme(self, meme_id: MemeId, params: EditMemeReq):

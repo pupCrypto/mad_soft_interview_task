@@ -1,6 +1,6 @@
 
 from typing import Annotated
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Form, UploadFile, File
 from .minio import MinioServiceDep
 from .service.service import ServiceDep
 from .schemas.request import (
@@ -42,9 +42,14 @@ async def get_meme(
 @app.post('/memes')
 async def create_meme(
     service: ServiceDep,
-    params: CreateMemeReq,
+    minio_service: MinioServiceDep,
+    img: Annotated[UploadFile, File()],
+    content: Annotated[str, Form()]
+
 ) -> CreateMemeResp:
-    return await service.create_meme(params)
+    print(img)
+    minio_service.save_img(img)
+    return await service.create_meme(content)
 
 
 @app.put('/memes/{meme_id}')

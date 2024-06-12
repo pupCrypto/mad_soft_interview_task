@@ -1,6 +1,5 @@
 import json
 import httpx
-from memes_service.settings import SETTINGS
 
 
 class TestClient:
@@ -22,4 +21,4 @@ class TestClient:
 
     @property
     def BASE(self):
-        return f'http://localhost:{SETTINGS.PORT}'
+        return 'http://localhost:7000'
