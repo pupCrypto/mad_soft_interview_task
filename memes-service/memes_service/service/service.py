@@ -1,5 +1,6 @@
-from typing import Annotated
-from fastapi import Depends, status
+from typing import Annotated, TypeVar
+import httpx
+from fastapi import Depends, status, UploadFile
 from .response_builder import (
     CreateMemeRespBuilder,
     EditMemeRespBuilder,
@@ -11,13 +12,16 @@ from .response_builder import (
 from ..storage import MemeId, DbMemeStorage
 from ..storage.exceptions import MemeNotFound
 from ..schemas.request import (
-    CreateMemeReq,
     EditMemeReq,
 )
+from ..settings import SETTINGS
+
+ImageUrl = TypeVar('ImageUrl', bound=str)
 
 
 class ErrorMsg:
-    MEME_NOT_FOUND: str = 'Мем не был найден'
+    CANNOT_UPLOAD_IMG = 'Не сохранить изображение'
+    MEME_NOT_FOUND = 'Мем не был найден'
 
 
 class Service:
@@ -35,7 +39,10 @@ class Service:
             return ErrorRespBuilder.build(ErrorMsg.MEME_NOT_FOUND, status.HTTP_404_NOT_FOUND)
         return GetMemeRespBuilder.build(meme)
 
-    async def create_meme(self, content: str, img_url: str):
+    async def create_meme(self, content: str, img: UploadFile):
+        img_url = await self.upload_img(img)
+        if img_url is None:
+            return ErrorRespBuilder.build(ErrorMsg.CANNOT_UPLOAD_IMG, status.HTTP_400_BAD_REQUEST)
         meme_id = await self.storage.create_meme(content, img_url)
         return CreateMemeRespBuilder.build(meme_id)
 
@@ -52,6 +59,15 @@ class Service:
         except MemeNotFound:
             return ErrorRespBuilder.build(ErrorMsg.MEME_NOT_FOUND, status.HTTP_404_NOT_FOUND)
         return DelMemeRepBuilder.build()
+
+    async def upload_img(self, img: UploadFile) -> ImageUrl | None:
+        url = 'http://' + SETTINGS.IMG_SERVICE_HOST + '/upload'
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, files=img)
+            if response.status_code == status.HTTP_200_OK:
+                resp_json = response.json()
+                return resp_json['img_url']
+            return None
 
     @property
     def storage(self):

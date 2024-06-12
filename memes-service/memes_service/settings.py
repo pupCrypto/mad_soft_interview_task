@@ -11,9 +11,7 @@ class Settings(BaseSettings):
     DB_PWD: str = 'postgres'
     DB_NAME: str = 'postgres2'
 
-    MINIO_ENDPOINT: str = 'localhost'
-    MINIO_ACCESS_KEY: str = 'miniominio'
-    MINIO_SECRET_KEY: str = 'miniominio'
+    IMG_SERVICE_HOST: str = 'localhost'
 
     @property
     def DATABASE_URL(self):

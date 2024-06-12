@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "memes-pics-service"
+version = "0.1.0"
+description = "Private service for managing memes pictures"
+authors = ["pupCrypto <ujif_cryptoriders@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

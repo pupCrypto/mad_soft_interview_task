@@ -1,6 +1,35 @@
 name: mad-soft-memes-system
 
 services:
+  memes-pics-service:
+    container_name: memes-pics-service
+    build: ./memes-pics-service
+    ports:
+      - "6000:80"
+    environment:
+      ACCESS_HOST: localhost
+
+      MINIO_ENDPOINT: minio-service:9000
+      MINIO_ACCESS_KEY: kX0hDuWjVCTJy3oZbDvL
+      MINIO_SECRET_KEY: CWYewUFwO2G1sgNx8PCX9Wwz7rYVNJ3YiI69jOkw
+
+      HOST: 0.0.0.0
+      PORT: 80
+    networks:
+      - minio
+      - services
+    develop:
+      watch:
+        - path: ./memes-pics-service/memes_pics_service
+          target: /app/memes_pics_service
+          action: sync
+
+        - path: ./memes-pics-service/poetry.lock
+          action: rebuild
+        
+        - path: ./memes-pics-service/pyproject.toml
+          action: rebuild
+
   memes-service:
     container_name: memes-service
     build: ./memes-service/
@@ -13,17 +42,17 @@ services:
       DB_USER: postgres
       DB_PWD: postgres
 
+      IMG_SERVICE_HOST: memes-pics-service
+
       MINIO_ENDPOINT: minio-service:9000
       MINIO_ACCESS_KEY: kX0hDuWjVCTJy3oZbDvL
       MINIO_SECRET_KEY: CWYewUFwO2G1sgNx8PCX9Wwz7rYVNJ3YiI69jOkw
 
       HOST: 0.0.0.0
       PORT: 80
-
     networks:
       - postgres
-      - minio
-
+      - services
     develop:
       watch:
         - path: ./memes-service/memes_service
@@ -64,10 +93,8 @@ services:
     image: postgres
     environment:
       POSTGRES_PASSWORD: postgres
-
     volumes:
       - postgres:/data/postgres
-
     networks:
       - postgres
 
@@ -89,6 +116,7 @@ services:
 networks:
   postgres:
   minio:
+  services:
 
 volumes:
   postgres:
