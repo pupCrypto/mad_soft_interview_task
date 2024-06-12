@@ -13,7 +13,7 @@ async def upload_img(
     service: ServiceDep,
     img: Annotated[UploadFile, File()],
 ):
-    await service.upload_img()
+    return await service.upload_img(img)
 
 
 @app.get('/imgs/{img_name}')

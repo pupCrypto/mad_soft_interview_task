@@ -12,4 +12,4 @@ class Meme(Base):
 
     id = mapped_column(Integer, primary_key=True)
     content = mapped_column(String(256), nullable=False)
-    img_url = mapped_column(String(256), nullable=True)
+    img_url = mapped_column(String(256), nullable=False)

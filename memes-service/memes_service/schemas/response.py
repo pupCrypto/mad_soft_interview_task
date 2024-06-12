@@ -1,6 +1,11 @@
 import enum
-from pydantic import BaseModel
-from .schemas import Meme
+from pydantic import BaseModel, ConfigDict
+
+
+class Meme(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    content: str
 
 
 class Status(enum.Enum):

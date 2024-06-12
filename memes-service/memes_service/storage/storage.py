@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar
-from .exceptions import MemeNotFound
+from .exceptions import MemeNotFound, NoDataToUpdate
 from .utils import clear_data
 from ..orm.postgres.manager import MemeManager
 from ..schemas.schemas import Meme
@@ -68,6 +68,8 @@ class DbMemeStorage(MemeStorageInterface):
             img_url: ImgUrl | None = None
     ):
         data = clear_data(content=content, img_url=img_url)
+        if len(data.values()) == 0:
+            raise NoDataToUpdate()
         is_updated = await self.manager.update_meme(meme_id, **data)
         if is_updated is False:
             raise MemeNotFound()

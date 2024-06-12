@@ -1,12 +1,13 @@
 from fastapi import HTTPException
+from fastapi.responses import Response
 from ..schemas.response import (
     CreateMemeResp,
     EditMemeResp,
     DelMemeResp,
     GetMemesResp,
     GetMemeResp,
+    Meme,
 )
-from ..schemas.schemas import Meme
 
 
 class ResponseBuilder:
@@ -48,4 +49,10 @@ class GetMemesRespBuilder(ResponseBuilder):
 class GetMemeRespBuilder(ResponseBuilder):
     @classmethod
     def build(cls, meme: Meme):
-        return GetMemeResp(id=meme.id, content=meme.content, img_url=meme.img_url)
+        return GetMemeResp(id=meme.id, content=meme.content)
+
+
+class GetImgRespBuilder(ResponseBuilder):
+    @classmethod
+    def build(cls, content: bytes):
+        return Response(content)

@@ -3,11 +3,14 @@ name: mad-soft-memes-system
 services:
   memes-pics-service:
     container_name: memes-pics-service
-    build: ./memes-pics-service
+    build: ./memes-pics-service/
+    restart: always
+    depends_on:
+      - minio
     ports:
       - "6000:80"
     environment:
-      ACCESS_HOST: localhost
+      ACCESS_ENDPOINT: http://memes-pics-service/imgs
 
       MINIO_ENDPOINT: minio-service:9000
       MINIO_ACCESS_KEY: kX0hDuWjVCTJy3oZbDvL
@@ -33,6 +36,10 @@ services:
   memes-service:
     container_name: memes-service
     build: ./memes-service/
+    restart: always
+    depends_on:
+      - postgres
+      - memes-pics-service
     ports:
       - "7000:80"
     environment:

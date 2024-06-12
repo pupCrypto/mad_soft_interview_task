@@ -2,9 +2,6 @@
 from typing import Annotated
 from fastapi import FastAPI, Query, Form, UploadFile, File
 from .service.service import ServiceDep
-from .schemas.request import (
-    EditMemeReq,
-)
 from .schemas.response import (
     GetMemesResp,
     GetMemeResp,
@@ -39,9 +36,9 @@ async def get_meme(
 
 @app.post('/memes')
 async def create_meme(
+    service: ServiceDep,
     content: Annotated[str, Form()],
     img: Annotated[UploadFile, File()],
-    service: ServiceDep
 ) -> CreateMemeResp:
     return await service.create_meme(content, img)
 
@@ -50,9 +47,10 @@ async def create_meme(
 async def edit_meme(
     service: ServiceDep,
     meme_id: int,
-    params: EditMemeReq,
+    content: Annotated[str | None, Form()] = None,
+    img: Annotated[UploadFile | None, File()] = None,
 ) -> EditMemeResp:
-    return await service.edit_meme(meme_id, params)
+    return await service.edit_meme(meme_id, content, img)
 
 
 @app.delete('/memes/{meme_id}')
@@ -61,3 +59,11 @@ async def del_meme(
     meme_id: int
 ) -> DelMemeResp:
     return await service.del_meme(meme_id)
+
+
+@app.get('/memes/{meme_id}/img')
+async def get_img(
+    service: ServiceDep,
+    meme_id: int
+):
+    return await service.get_img(meme_id)

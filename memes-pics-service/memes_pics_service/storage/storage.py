@@ -1,18 +1,25 @@
 from abc import ABC, abstractmethod
+from typing import TypeVar
 from fastapi import UploadFile
 from minio import Minio
+from urllib3.response import HTTPResponse
+from ..schemas.schemas import StorageImage
 from ..settings import SETTINGS
+
+
+
+ImgUploaded = TypeVar('ImgUploaded', bound=bool)
 
 
 class StorageInterface(ABC):
     def init_storage(self):
         raise NotImplementedError()
 
-    @abstractmethod()
+    @abstractmethod
     def upload(self, img: UploadFile):
         raise NotImplementedError()
 
-    @abstractmethod()
+    @abstractmethod
     def download(self, img_name: str):
         raise NotImplementedError()
 
@@ -28,16 +35,22 @@ class MinioStorage(StorageInterface):
             secure=False
         )
 
-    async def download(self, img_name: str):
-        return super().download(img_name)
+    async def download(self, img_name: str) -> bytes:
+        response: HTTPResponse = self.client.get_object(self.bucket_name, img_name)
+        content = response.read()
+        return StorageImage(content=content, img_name=img_name)
 
-    async def upload(self, img: UploadFile):
-        return super().upload(img)
+    async def upload(self, img: UploadFile) -> ImgUploaded:
+        try:
+            self.client.put_object(self.bucket_name, img.filename, img.file, img.size, img.content_type)
+            return True
+        except Exception as e:
+            return False
 
     async def init_storage(self):
-        bucket_exists = await self.client.bucket_exists(self.bucket_name)
+        bucket_exists = self.client.bucket_exists(self.bucket_name)
         if not bucket_exists:
-            await self.client.make_bucket(self.bucket_name)
+            self.client.make_bucket(self.bucket_name)
 
     @property
     def client(self):

@@ -29,7 +29,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 COPY pyproject.toml /app/
 COPY poetry.lock /app/
-COPY memes_service /app/memes_service/
+COPY memes_pics_service /app/memes_pics_service/
 COPY run.py /app/
 
 RUN pip install poetry
