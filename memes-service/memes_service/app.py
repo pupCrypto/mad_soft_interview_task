@@ -1,6 +1,7 @@
 
 from typing import Annotated
 from fastapi import FastAPI, Query
+from .minio import MinioServiceDep
 from .service.service import ServiceDep
 from .schemas.request import (
     CreateMemeReq,

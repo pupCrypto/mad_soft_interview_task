@@ -1,1 +1,95 @@
 name: mad-soft-memes-system
+
+services:
+  memes-service:
+    container_name: memes-service
+    build: ./memes-service/
+    ports:
+      - "7000:80"
+    environment:
+      DB_HOST: postgres-service
+      DB_NAME: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PWD: postgres
+
+      MINIO_HOST: minio-service
+      MINIO_USER: miniominio
+      MINIO_PWD: miniominio
+
+      HOST: 0.0.0.0
+      PORT: 80
+
+    networks:
+      - postgres
+      - minio
+
+    develop:
+      watch:
+        - path: ./memes-service/memes_service
+          target: /app/memes_service
+          action: sync
+
+        - path: ./memes-service/poetry.lock
+          action: rebuild
+        
+        - path: ./memes-service/pyproject.toml
+          action: rebuild
+
+  minio:
+    container_name: minio-service
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    volumes:
+      - "./minio-data:/data"
+    expose:
+      - "9000"
+      - "9001"
+    networks:
+      - minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: miniominio
+      MINIO_ROOT_PASSWORD: miniominio
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  postgres:
+    container_name: postgres-service
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+    volumes:
+      - postgres:/data/postgres
+
+    networks:
+      - postgres
+
+  pgadmin:
+    container_name: pgadmin-serivce
+    image: dpage/pgadmin4
+    networks:
+      - postgres
+
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.admin
+      PGADMIN_DEFAULT_PASSWORD: postgres
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - "5050:5050"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+networks:
+  postgres:
+  minio:
+
+volumes:
+  postgres:
+  pgadmin:

@@ -27,22 +27,14 @@ ENV PYTHONUNBUFFERED=1 \
     PYSETUP_PATH="/opt/pysetup" \
     VENV_PATH="/opt/pysetup/.venv"
 
-# add ssh keys for copying private repo
-COPY ssh /root/.ssh
-RUN touch /root/.ssh/known_hosts
-RUN echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-RUN ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-RUN chmod -R 600 /root/.ssh/
-
 COPY pyproject.toml /app/
 COPY poetry.lock /app/
-COPY wshub /app/wshub/
+COPY memes_service /app/memes_service/
 COPY run.py /app/
 
 RUN pip install poetry
 RUN poetry lock
 RUN poetry install
 
-RUN rm -r /root/.ssh/
 
 CMD ["poetry", "run", "python", "run.py"]
