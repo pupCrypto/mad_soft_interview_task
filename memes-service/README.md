@@ -50,5 +50,64 @@ GET /memes?limit=10&page=0
 }
 ```
 
-### Get /memes/{meme_id}
+### GET /memes/{meme_id}
 Return current meme
+#### Example
+```
+GET /memes/1
+{
+    "status": "ok",
+    "id": 1,
+    "content": "That same feeling"
+}
+```
+
+### POST /memes
+Create new meme with img
+##### Headers
+Content-Type: multipart/form-data; boundary="sadfjkldsd"
+| Name    | Type       | Location | Required |
+|---------|------------|----------|----------|
+| content | str        | body     | true     |
+| img     | image file | body     | true     |
+
+#### Example
+```
+POST /memes
+{
+    "status": "ok"
+}
+```
+
+### PUT /memes/{meme_id}
+Edit the meme
+##### Headers
+Content-Type: multipart/form-data; boundary="sadfjkldsd"
+| Name    | Type       | Location | Required |
+|---------|------------|----------|----------|
+| content | str        | body     | false    |
+| img     | image file | body     | false    |
+
+#### Example
+```
+PUT /memes/1
+{
+    "status": "ok"
+}
+```
+### DELETE /memes/{meme_id}
+Delete the meme
+#### Example
+```
+DELETE /memes/1
+{
+    "status": "ok"
+}
+```
+### GET /memes/{meme_id}/img
+Get img of the meme
+### Example
+```
+GET /memes/1/img
+IMAGE FILE
+```
